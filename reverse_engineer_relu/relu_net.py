@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 from matplotlib import pyplot
 from sklearn.model_selection import KFold
+import os
+
 
 def load_dataset():
     (trainX, trainY), (testX, testY) = tf.keras.datasets.mnist.load_data()
@@ -38,17 +40,22 @@ def model_def():
 
 
 def evaluate_model(dataX, dataY, n_folds=5):
-	scores, histories = list(), list()
-	kfold = KFold(n_folds, shuffle=True, random_state=1)
-	for train_ix, test_ix in kfold.split(dataX):
-		model = model_def()
-		trainX, trainY, testX, testY = dataX[train_ix], dataY[train_ix], dataX[test_ix], dataY[test_ix]
-		history = model.fit(trainX, trainY, epochs=10, batch_size=32, validation_data=(testX, testY), verbose=0)
-		_, acc = model.evaluate(testX, testY, verbose=0)
-		print('> %.3f' % (acc * 100.0))
-		scores.append(acc)
-		histories.append(history)
-	return scores, histories
+    scores, histories = list(), list()
+    kfold = KFold(n_folds, shuffle=True, random_state=1)
+    for train_ix, test_ix in kfold.split(dataX):
+        model = model_def()
+        trainX, trainY, testX, testY = dataX[train_ix], dataY[train_ix], dataX[test_ix], dataY[test_ix]
+        history = model.fit(trainX, trainY, epochs=5, batch_size=30, validation_data=(testX, testY), verbose=0)
+        _, acc = model.evaluate(testX, testY, verbose=0)
+        print('> %.3f' % (acc * 100.0))
+        scores.append(acc)
+        histories.append(history)
+    
+    model_json = model.to_json()
+    with open("model1.json", "w") as json_file:
+        json_file.write(model_json)
+    model.save_weights("model1_weights.h5")
+    return scores, histories
  
 def summarize_diagnostics(histories):
 	for i in range(len(histories)):
@@ -75,7 +82,13 @@ def run_test():
 	trainX, trainY, testX, testY = load_dataset()
 	trainX, testX = prep_pixels(trainX, testX)
 	scores, histories = evaluate_model(trainX, trainY)
-	summarize_diagnostics(histories)
-	summarize_performance(scores)
+	# summarize_diagnostics(histories)
+	# summarize_performance(scores)
+
+
+
 
 run_test()
+
+
+

@@ -1,6 +1,7 @@
 # first layer
 # network N, weight matrix W, bias vector b
 # hyperplane Bz for each z, W.x + b = 0
+# tensor model : need to add the algo there
 p1 = []
 p2 = []
 s1 = []
