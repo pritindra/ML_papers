@@ -63,6 +63,7 @@ y_one_hot = OneHotEncoder(sparse= False).fit_transform(y_comb.reshape(len(y_comb
 
 X_train, X_test, y_train, y_test = train_test_split(X, y_one_hot, test_size = 0.2, random_state=1)
 
+"""
 # convulational layer - 5
 def cn_layer(fx,y = False):
     model = tf.keras.models.Sequential()
@@ -90,8 +91,6 @@ def cnn(f1,f2,f3,h1,h2):
     model.add(cn_layer(f2,True))
     model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = "same"))
     model.add(cn_layer(f3))
-    model.add(cn_layer(f3))
-    model.add(cn_layer(f2))
     model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = "same"))
 
     model.add(tf.keras.layers.Flatten())
@@ -102,9 +101,36 @@ def cnn(f1,f2,f3,h1,h2):
     model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
     return model
 
+"""
+
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Input((40,20,1,)))
+
+model.add(tf.keras.layers.Conv2D(96,(11,11),activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding="same"))
+
+model.add(tf.keras.layers.Conv2D(256,(5,5),activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2),padding="same"))
+
+model.add(tf.keras.layers.Conv2D(384,(3,3),activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+
+model.add(tf.keras.layers.Conv2D(384,(3,3),activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+
+model.add(tf.keras.layers.Conv2D(256,(3,3),activation="relu"))
+
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(2048,activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Dense(2048,activation="relu"))
+model.add(tf.keras.layers.BatchNormalization())
+model.add(tf.keras.layers.Dense(19, activation="softmax"))
+
 traingen = tf.keras.preprocessing.image.ImageDataGenerator(rotation_range=5, width_shift_range=[-2,2])
 traingen.fit(X_train)
-model = cnn(128, 32, 16, 32, 32)
 model.summary()
 
 reduce = ReduceLROnPlateau(monitor="val_loss", patience=20, verbose=1)
