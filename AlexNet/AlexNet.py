@@ -133,8 +133,8 @@ traingen = tf.keras.preprocessing.image.ImageDataGenerator(rotation_range=5, wid
 traingen.fit(X_train)
 model.summary()
 
-reduce = ReduceLROnPlateau(monitor="val_loss", patience=20, verbose=1)
-checkp = ModelCheckpoint('./result_model.h5', monitor = 'val_loss', verbose = 1, save_best_only = True)
+reduce = tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", patience=20, verbose=1)
+checkp = tf.keras.callbacks.ModelCheckpoint('./result_model.h5', monitor = 'val_loss', verbose = 1, save_best_only = True)
 
 history = model.fit(traingen.flow(X_train, y_train, batch_size = 32), validation_data = (X_test, y_test), epochs = 150, steps_per_epoch = len(X_train)/32, callbacks = [checkp])
 
